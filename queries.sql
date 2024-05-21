@@ -2,7 +2,6 @@
 select count(customer_id) as customers_count
 from customers;
 
-
 --Данный запрос выводит имена и фамилии продавцов, количество сделанных ими продаж и выручку
 --Результат отсортирован по выручке, выведены топ-10 продавцов по выручке
 select 
@@ -23,7 +22,6 @@ with tab as (
 select avg(price * quantity) as total_avg
 from sales s 
 join products p on p.product_id = s.product_id)
-
 select concat(first_name,' ', last_name) as seller, round(avg(price * quantity), 0) as average_income 
 from employees e 
 join sales s on e.employee_id = s.sales_person_id
@@ -31,7 +29,6 @@ join products p on p.product_id = s.product_id
 group by concat(first_name,' ', last_name)
 having avg(price * quantity) < (select total_avg from tab)
 order by average_income;
-
 
 --Данный запрос выводит имена и фамилии продавцов, названия дней недели и выручка
 --Результат отсортирован по номерам дней недели и именам и фамилиям продавцов
@@ -46,6 +43,5 @@ join sales s on e.employee_id = s.sales_person_id
 join products p on p.product_id = s.product_id
 group by concat(first_name,' ', last_name), to_char(sale_date, 'Day'), extract (isodow from sale_date)
 order by day_number, seller)
-
 select seller, day_of_week, income
 from tab
