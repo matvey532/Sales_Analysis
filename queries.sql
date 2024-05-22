@@ -23,7 +23,6 @@ with tab as (
 select avg(price * quantity) as total_avg
 from sales s 
 join products p on p.product_id = s.product_id)
-
 select concat(first_name,' ', last_name) as seller, round(avg(price * quantity), 0) as average_income 
 from employees e 
 join sales s on e.employee_id = s.sales_person_id
@@ -46,9 +45,9 @@ join sales s on e.employee_id = s.sales_person_id
 join products p on p.product_id = s.product_id
 group by concat(first_name,' ', last_name), to_char(sale_date, 'Day'), extract (isodow from sale_date)
 order by day_number, seller)
-
 select seller, day_of_week, income
 from tab
+
 
 --Данный запрос разбивает покупателей на 3 возрастные группы (16-25, 26-40 и 40+) и выводит эти группы и количество покупателей в них
 --Результат отсортирован по возрастным группам
@@ -61,7 +60,6 @@ case
 	else '40+'
 end as age_category           
 from customers)
-
 select    
 age_category,
 count(age) as age_count
@@ -82,7 +80,6 @@ join products p on p.product_id = s.product_id
 group by to_char(sale_date, 'YYYY-MM')
 order by selling_month;
 
-
 --Данный запрос выводит имена и фамилии покупателей, первая покупка которых была равна 0, дату этой продажи и продавцов
 --Результат отсортирован по id покупателей
 with tab as (
@@ -97,7 +94,6 @@ join customers c on s.customer_id = c.customer_id
 join products p on p.product_id = s.product_id
 join employees e on e.employee_id = s.sales_person_id
 order by concat(c.first_name,' ',c.last_name), sale_date)
-
 select customer, sale_date, seller
 from tab
 where price = 0 and sale_number = 1
