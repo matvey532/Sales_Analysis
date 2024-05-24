@@ -4,11 +4,11 @@ from customers;
 
 
 --Данный запрос выводит имена и фамилии продавцов, количество сделанных ими продаж и выручку
---Результат отсортирован по выручке, выведены топ-10 продавцов по выручке
+--Результат отсортирован по выручке, выведены топ-10 продавцов
 select
     concat(first_name, ' ', last_name) as seller,
     count(sales_id) as operations,
-    floor(sum(price * quantity)) as income
+    round(sum(price * quantity)) as income
 from employees as e
 inner join sales as s on e.employee_id = s.sales_person_id
 inner join products as p on s.product_id = p.product_id
@@ -27,7 +27,7 @@ with tab as (
 
 select
     concat(first_name, ' ', last_name) as seller,
-    floor(avg(price * quantity)) as average_income
+    round(avg(price * quantity)) as average_income
 from employees as e
 inner join sales as s on e.employee_id = s.sales_person_id
 inner join products as p on s.product_id = p.product_id
@@ -42,7 +42,7 @@ with tab as (
     select
         concat(first_name, ' ', last_name) as seller,
         to_char(sale_date, 'day') as day_of_week,
-        floor(sum(price * quantity)) as income,
+        round(sum(price * quantity)) as income,
         extract(isodow from sale_date) as day_number
     from employees as e
     inner join sales as s on e.employee_id = s.sales_person_id
@@ -87,7 +87,7 @@ order by age_category;
 select
     to_char(sale_date, 'YYYY-MM') as selling_month,
     count(distinct c.customer_id) as total_customers,
-    floor(sum(quantity * price)) as income
+    round(sum(quantity * price)) as income
 from sales as s
 inner join customers as c on s.customer_id = c.customer_id
 inner join products as p on s.product_id = p.product_id
