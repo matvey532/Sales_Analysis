@@ -1,7 +1,6 @@
 --Данный запрос выдает общее количество покупателей из таблицы customers 
-select
-	count(customer_id) as customers_count
-from
+select count(customer_id) as customers_count
+    from
 	customers;
 --Данный запрос выводит имена и фамилии продавцов, количество сделанных ими продаж и выручку
 --Результат отсортирован по выручке, выведены топ-10 продавцов по выручке
@@ -11,29 +10,28 @@ select
 	last_name) as seller,
 	count(sales_id) as operations,
 	floor(sum(price * quantity)) as income
-from
-	employees as e
-inner join sales as s on
+    from
+        employees as e
+    inner join sales as s on
 	e.employee_id = s.sales_person_id
-inner join products as p on
+    inner join products as p on
 	s.product_id = p.product_id
-group by
+        group by
 	concat(first_name,
 	' ',
 	last_name)
-order by
+        order by
 	income desc
-limit 10;
+    limit 10;
 --Данный запрос выводит имена имена и фамилии продавцов, чья средняя выручка за сделку меньше средней выручки за сделку по всем продавцам, и их среднюю выручку
 --Результат отсортирован по средней выручке
 with tab as (
-select
-	avg(price * quantity) as total_avg
-from
-	sales as s
-inner join products as p on
-	s.product_id = p.product_id
-)
+select avg(price * quantity) as total_avg
+    from
+        sales as s
+    inner join products as p on
+        s.product_id = p.product_id
+        )
 
 select
 	concat(first_name,
