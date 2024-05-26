@@ -1,10 +1,10 @@
---Данный запрос выдает общее количество покупателей из таблицы customers 
+--Запрос выдает общее количество покупателей из таблицы customers 
 SELECT COUNT(customer_id) AS customers_count
 FROM customers;
---Запрос выводит имена и фамилии продавцов, кол-во сделанных продаж и выручку
+--Запрос выводит имена и фамилии продавцов, ко-во сделанных ими продаж и выручку
 --Результат отсортирован по выручке, выведены топ-10 продавцов по выручке
 SELECT
-     AS seller,
+    CONCAT(first_name, ' ', last_name) AS seller,
     COUNT(sales_id) AS operations,
     FLOOR(SUM(price * quantity)) AS income
 FROM
@@ -16,32 +16,32 @@ GROUP BY
 ORDER BY
     income DESC
 LIMIT 10;
---Данный запрос выводит имена имена и фамилии продавцов, чья средняя выручка за сделку меньше средней выручки за сделку по всем продавцам, и их среднюю выручку
+--Запрос выводит продавцов, чья средняя выручка меньше средней выручки по всем продавцам, и их среднюю выручку
 --Результат отсортирован по средней выручке
-WITH total_avg AS (
-    SELECT AVG(price * quantity) AS avg_income
+WITH tab AS (
+    SELECT AVG(price * quantity) AS total_avg
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
 )
 SELECT
-    CONCAT(e.first_name, ' ', e.last_name) AS seller,
+    CONCAT(first_name, ' ', last_name) AS seller,
     FLOOR(AVG(price * quantity)) AS average_income
 FROM
     employees AS e
 INNER JOIN sales AS s ON e.employee_id = s.sales_person_id
 INNER JOIN products AS p ON s.product_id = p.product_id
 GROUP BY
-    e.employee_id, e.first_name, e.last_name
+    CONCAT(first_name, ' ', last_name)
 HAVING
-    AVG(price * quantity) < (SELECT avg_income FROM total_avg)
+    AVG(price * quantity) < (SELECT total_avg FROM tab)
 ORDER BY
     average_income;
---Данный запрос выводит имена и фамилии продавцов, названия дней недели и выручку
+--Запрос выводит имена и фамилии продавцов, названия дней недели и выручку
 --Результат отсортирован по номерам дней недели и именам и фамилиям продавцов
 WITH tab AS (
     SELECT
         CONCAT(e.first_name, ' ', e.last_name) AS seller,
-        TO_CHAR(s.sale_date, 'Day') AS day_of_week,
+        TO_CHAR(s.sale_date, 'day') AS day_of_week,
         FLOOR(SUM(p.price * s.quantity)) AS income,
         EXTRACT(ISODOW FROM s.sale_date) AS day_number
     FROM
@@ -49,7 +49,7 @@ WITH tab AS (
     INNER JOIN sales AS s ON e.employee_id = s.sales_person_id
     INNER JOIN products AS p ON s.product_id = p.product_id
     GROUP BY
-        e.employee_id, e.first_name, e.last_name, TO_CHAR(s.sale_date, 'Day'), EXTRACT(ISODOW FROM s.sale_date)
+        e.employee_id, e.first_name, e.last_name, TO_CHAR(s.sale_date, 'day'), EXTRACT(ISODOW FROM s.sale_date)
 )
 SELECT
     seller,
@@ -60,7 +60,8 @@ FROM
 ORDER BY
     day_number,
     seller;
---Данный запрос разбивает покупателей на 3 возрастные группы (16-25, 26-40 и 40+) и выводит эти группы и количество покупателей в них
+--Запрос разбивает покупателей на 3 возрастные группы (16-25, 26-40 и 40+) 
+--и выводит эти группы и количество покупателей в них
 --Результат отсортирован по возрастным группам
 WITH tab AS (
     SELECT
@@ -82,7 +83,7 @@ GROUP BY
     age_category
 ORDER BY
     age_category;
---Данный запрос выводит месяцы продаж, количество уникальных покупателей в каждом месяце и принесенную ими выручку
+--Запрос выводит месяцы продаж, кол-во уникальных покупателей и выручку
 --Результат отсортирован по месяцам продаж
 SELECT
     TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month,
@@ -96,7 +97,7 @@ GROUP BY
     TO_CHAR(s.sale_date, 'YYYY-MM')
 ORDER BY
     selling_month;
---Данный запрос выводит имена и фамилии покупателей, первая покупка которых была равна 0, дату этой продажи и продавцов
+--Запрос выводит покупателей, первая покупка которых была равна 0, даты и продавцов
 --Результат отсортирован по id покупателей
 WITH tab AS (
     SELECT
