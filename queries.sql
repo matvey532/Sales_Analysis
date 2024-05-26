@@ -25,6 +25,7 @@ WITH tab AS (
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
 )
+
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
     FLOOR(AVG(p.price * s.quantity)) AS average_income
@@ -51,8 +52,9 @@ WITH tab AS (
     INNER JOIN sales AS s ON e.employee_id = s.sales_person_id
     INNER JOIN products AS p ON s.product_id = p.product_id
     GROUP BY
-        e.first_name, e.last_name, TO_CHAR(s.sale_date, 'day'), EXTRACT(ISODOW FROM s.sale_date)
+        e.first_name, e.last_name, 2, 4
 )
+
 SELECT
     seller,
     day_of_week,
@@ -76,6 +78,7 @@ WITH tab AS (
     FROM
         customers
 )
+
 SELECT
     age_category,
     COUNT(age) AS age_count
@@ -99,7 +102,8 @@ GROUP BY
     TO_CHAR(s.sale_date, 'YYYY-MM')
 ORDER BY
     selling_month;
---Запрос выводит покупателей, первая покупка которых была равна 0, даты и продавцов.
+--Запрос выводит покупателей, первая покупка которых была равна 0, 
+--даты и продавцов.
 --Результат отсортирован по id покупателей.
 WITH tab AS (
     SELECT
@@ -117,6 +121,7 @@ WITH tab AS (
     INNER JOIN products AS p ON s.product_id = p.product_id
     INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
 )
+
 SELECT
     tab.customer,
     tab.sale_date,
@@ -124,7 +129,7 @@ SELECT
 FROM
     tab
 WHERE
-    price = 0
+    tab.price = 0
     AND tab.sale_number = 1
 ORDER BY
     tab.customer;
