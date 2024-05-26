@@ -1,7 +1,8 @@
 --Запрос выдает общее количество покупателей из таблицы customers.
 SELECT COUNT(customer_id) AS customers_count
 FROM customers;
---Запрос выводит имена и фамилии продавцов, ко-во сделанных ими продаж и выручку.
+--Запрос выводит имена и фамилии продавцов, 
+--кол-во сделанных ими продаж и выручку.
 --Результат отсортирован по выручке, выведены топ-10 продавцов по выручке.
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
@@ -24,7 +25,6 @@ WITH tab AS (
     FROM sales AS s
     INNER JOIN products AS p ON s.product_id = p.product_id
 )
-    
 SELECT
     CONCAT(e.first_name, ' ', e.last_name) AS seller,
     FLOOR(AVG(p.price * s.quantity)) AS average_income
@@ -42,18 +42,17 @@ ORDER BY
 --Результат отсортирован по номерам дней недели и именам и фамилиям продавцов.
 WITH tab AS (
     SELECT
-        CONCAT(e.e.first_name, ' ', e.e.last_name) AS seller,
+        CONCAT(e.first_name, ' ', e.last_name) AS seller,
         TO_CHAR(s.sale_date, 'day') AS day_of_week,
-        FLOOR(SUM(p.p.price * s.s.quantity)) AS income,
+        FLOOR(SUM(p.price * s.quantity)) AS income,
         EXTRACT(ISODOW FROM s.sale_date) AS day_number
     FROM
         employees AS e
     INNER JOIN sales AS s ON e.employee_id = s.sales_person_id
     INNER JOIN products AS p ON s.product_id = p.product_id
     GROUP BY
-        e.employee_id, e.e.first_name, e.e.last_name, TO_CHAR(s.sale_date, 'day'), EXTRACT(ISODOW FROM s.sale_date)
+        e.first_name, e.last_name, TO_CHAR(s.sale_date, 'day'), EXTRACT(ISODOW FROM s.sale_date)
 )
-    
 SELECT
     seller,
     day_of_week,
@@ -77,7 +76,6 @@ WITH tab AS (
     FROM
         customers
 )
-    
 SELECT
     age_category,
     COUNT(age) AS age_count
@@ -92,7 +90,7 @@ ORDER BY
 SELECT
     TO_CHAR(s.sale_date, 'YYYY-MM') AS selling_month,
     COUNT(DISTINCT c.customer_id) AS total_customers,
-    FLOOR(SUM(s.s.quantity * p.p.price)) AS income
+    FLOOR(SUM(s.quantity * p.price)) AS income
 FROM
     sales AS s
 INNER JOIN customers AS c ON s.customer_id = c.customer_id
@@ -106,9 +104,9 @@ ORDER BY
 WITH tab AS (
     SELECT
         s.sale_date,
-        p.p.price,
-        CONCAT(c.e.first_name, ' ', c.e.last_name) AS customer,
-        CONCAT(e.e.first_name, ' ', e.e.last_name) AS seller,
+        p.price,
+        CONCAT(c.first_name, ' ', c.last_name) AS customer,
+        CONCAT(e.first_name, ' ', e.last_name) AS seller,
         ROW_NUMBER() OVER (
             PARTITION BY c.customer_id
             ORDER BY s.sale_date
@@ -119,15 +117,14 @@ WITH tab AS (
     INNER JOIN products AS p ON s.product_id = p.product_id
     INNER JOIN employees AS e ON s.sales_person_id = e.employee_id
 )
-    
 SELECT
-    customer,
-    sale_date,
-    seller
+    tab.customer,
+    tab.sale_date,
+    tab.seller
 FROM
     tab
 WHERE
-    p.price = 0
-    AND sale_number = 1
+    price = 0
+    AND tab.sale_number = 1
 ORDER BY
-    customer;
+    tab.customer;
