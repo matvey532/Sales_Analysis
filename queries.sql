@@ -52,7 +52,10 @@ WITH tab AS (
     INNER JOIN sales AS s ON e.employee_id = s.sales_person_id
     INNER JOIN products AS p ON s.product_id = p.product_id
     GROUP BY
-        e.first_name, e.last_name, 2, 4
+        e.first_name, 
+        e.last_name, 
+        TO_CHAR(s.sale_date, 'day'), 
+        EXTRACT(ISODOW FROM s.sale_date)
 )
 
 SELECT
